@@ -403,6 +403,28 @@
     .search-input:focus { border-color: var(--accent); }
     .search-input::placeholder { color: var(--text-dim); }
 
+    .clear-search-btn {
+      position: absolute;
+      right: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      color: var(--text-muted);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 500;
+      padding: 4px 8px;
+      cursor: pointer;
+      transition: color 0.15s, border-color 0.15s;
+    }
+
+    .clear-search-btn:hover {
+      color: var(--text);
+      border-color: var(--border-hover);
+    }
+
     /* ── User list ──────────────────────────── */
     .user-list {
       display: flex;
@@ -601,7 +623,10 @@
       <button class="copy-btn" id="copy-btn">Copy all</button>
     </div>
 
-    <input type="text" class="search-input" id="search-input" placeholder="Search usernames…" autocomplete="off">
+    <div style="position:relative">
+      <input type="text" class="search-input" id="search-input" placeholder="Search usernames…" autocomplete="off" style="padding-right:80px">
+      <button class="clear-search-btn" id="clear-search-btn" style="display:none">✕ clear</button>
+    </div>
 
     <div class="user-list" id="user-list"></div>
 
@@ -815,9 +840,19 @@
   }
 
   // ── Search ─────────────────────────────────────────────────────────────────
+  const clearSearchBtn = document.getElementById('clear-search-btn');
+
   searchInput.addEventListener('input', () => {
     const q = searchInput.value.trim().toLowerCase();
+    clearSearchBtn.style.display = q ? 'block' : 'none';
     renderList(q ? ghostList.filter(u => u.toLowerCase().includes(q)) : ghostList);
+  });
+
+  clearSearchBtn.addEventListener('click', () => {
+    searchInput.value = '';
+    clearSearchBtn.style.display = 'none';
+    searchInput.focus();
+    renderList(ghostList);
   });
 
   // ── Copy all ───────────────────────────────────────────────────────────────
@@ -858,6 +893,7 @@
     howItWorks.style.display    = '';
     analyzeBtn.disabled         = true;
     searchInput.value           = '';
+    clearSearchBtn.style.display = 'none';
     hideError();
     window.scrollTo({ top: 0, behavior: 'smooth' });
   });
