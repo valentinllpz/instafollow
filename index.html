@@ -1,0 +1,853 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ghosted. — instagram follower checker</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg:           #0A0A0B;
+      --bg-2:         #111113;
+      --bg-3:         #18181B;
+      --border:       #27272A;
+      --border-hover: #3F3F46;
+      --text:         #FAFAF9;
+      --text-muted:   #71717A;
+      --text-dim:     #3F3F46;
+      --accent:       #FF4D00;
+      --accent-glow:  rgba(255, 77, 0, 0.12);
+      --accent-sub:   rgba(255, 77, 0, 0.07);
+      --green:        #22C55E;
+      --green-sub:    rgba(34, 197, 94, 0.08);
+      --radius:       12px;
+    }
+
+    html { scroll-behavior: smooth; }
+
+    body {
+      background:
+        radial-gradient(ellipse 90% 45% at 50% -10%, var(--accent-glow) 0%, transparent 65%),
+        var(--bg);
+      color: var(--text);
+      font-family: 'Syne', sans-serif;
+      min-height: 100vh;
+      overflow-x: hidden;
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* Noise grain */
+    body::after {
+      content: '';
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 9999;
+      opacity: 0.025;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='400' height='400'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='400' height='400' filter='url(%23n)'/%3E%3C/svg%3E");
+      background-size: 200px 200px;
+    }
+
+    .container {
+      max-width: 660px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* ── Header ─────────────────────────────── */
+    header {
+      padding: 72px 0 56px;
+      text-align: center;
+    }
+
+    .eyebrow {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      font-weight: 400;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-dim);
+      margin-bottom: 28px;
+    }
+
+    .eyebrow::before, .eyebrow::after {
+      content: '';
+      display: block;
+      height: 1px;
+      width: 40px;
+      background: var(--border);
+    }
+
+    h1 {
+      font-size: clamp(64px, 14vw, 104px);
+      font-weight: 800;
+      line-height: 0.92;
+      letter-spacing: -0.04em;
+      color: var(--text);
+    }
+
+    h1 .dot {
+      color: var(--accent);
+    }
+
+    .tagline {
+      margin-top: 20px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      letter-spacing: 0.02em;
+    }
+
+    /* ── How it works ───────────────────────── */
+    .how-it-works {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 24px;
+      margin-bottom: 32px;
+    }
+
+    .section-label {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      margin-bottom: 18px;
+    }
+
+    .steps {
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .steps li {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+    }
+
+    .step-num {
+      flex-shrink: 0;
+      width: 22px;
+      height: 22px;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--accent);
+      margin-top: 1px;
+    }
+
+    .steps li p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+      line-height: 1.65;
+    }
+
+    .steps li p strong {
+      color: var(--text);
+      font-weight: 500;
+    }
+
+    code {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 1px 5px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--accent);
+    }
+
+    /* ── Upload ─────────────────────────────── */
+    #upload-section { margin-bottom: 0; }
+
+    .upload-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    @media (max-width: 460px) {
+      .upload-grid { grid-template-columns: 1fr; }
+    }
+
+    .drop-zone {
+      border: 1.5px dashed var(--border);
+      border-radius: var(--radius);
+      padding: 32px 20px 28px;
+      text-align: center;
+      cursor: pointer;
+      transition: border-color 0.2s, background 0.2s, transform 0.15s;
+      background: var(--bg-2);
+      user-select: none;
+    }
+
+    .drop-zone:hover {
+      border-color: var(--accent);
+      background: var(--accent-sub);
+    }
+
+    .drop-zone.drag-over {
+      border-color: var(--accent);
+      background: var(--accent-sub);
+      transform: scale(1.02);
+    }
+
+    .drop-zone.loaded {
+      border-style: solid;
+      border-color: var(--green);
+      background: var(--green-sub);
+    }
+
+    .drop-icon {
+      font-size: 32px;
+      display: block;
+      margin-bottom: 12px;
+      transition: transform 0.2s;
+      line-height: 1;
+    }
+
+    .drop-zone:hover .drop-icon { transform: scale(1.12) translateY(-2px); }
+
+    .drop-label {
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .drop-hint {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-muted);
+      transition: color 0.2s;
+    }
+
+    .drop-zone.loaded .drop-hint { color: var(--green); }
+
+    .drop-filename {
+      margin-top: 8px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--green);
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+      max-width: 140px;
+      margin-inline: auto;
+    }
+
+    .error-msg {
+      margin-top: 14px;
+      background: rgba(239, 68, 68, 0.08);
+      border: 1px solid rgba(239, 68, 68, 0.25);
+      border-radius: 8px;
+      padding: 12px 16px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: #FCA5A5;
+      display: none;
+    }
+
+    /* ── Analyze button ─────────────────────── */
+    .analyze-btn {
+      width: 100%;
+      margin-top: 14px;
+      padding: 17px;
+      background: var(--accent);
+      color: #fff;
+      border: none;
+      border-radius: var(--radius);
+      font-family: 'Syne', sans-serif;
+      font-size: 13px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      cursor: pointer;
+      position: relative;
+      overflow: hidden;
+      transition: opacity 0.2s, transform 0.15s;
+    }
+
+    .analyze-btn::after {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(to bottom, rgba(255,255,255,0.12), transparent);
+      pointer-events: none;
+    }
+
+    .analyze-btn:hover:not(:disabled) { opacity: 0.88; }
+    .analyze-btn:active:not(:disabled) { transform: scale(0.985); }
+
+    .analyze-btn:disabled {
+      background: var(--bg-3);
+      color: var(--text-dim);
+      cursor: not-allowed;
+    }
+
+    /* ── Results ────────────────────────────── */
+    #results {
+      display: none;
+      padding-bottom: 64px;
+      animation: fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    .stats-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+      margin-bottom: 36px;
+    }
+
+    .stat-card {
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 22px 16px 18px;
+      text-align: center;
+    }
+
+    .stat-card.hot {
+      border-color: var(--accent);
+      background: var(--accent-sub);
+    }
+
+    .stat-num {
+      font-size: clamp(30px, 7vw, 44px);
+      font-weight: 800;
+      line-height: 1;
+      letter-spacing: -0.03em;
+      margin-bottom: 7px;
+    }
+
+    .stat-card.hot .stat-num { color: var(--accent); }
+
+    .stat-lbl {
+      font-size: 9px;
+      font-weight: 700;
+      letter-spacing: 0.18em;
+      text-transform: uppercase;
+      color: var(--text-muted);
+    }
+
+    /* ── List controls ──────────────────────── */
+    .list-controls {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .copy-btn {
+      flex-shrink: 0;
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.12em;
+      text-transform: uppercase;
+      padding: 7px 14px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s;
+    }
+
+    .copy-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .search-input {
+      width: 100%;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      padding: 11px 14px;
+      outline: none;
+      margin-bottom: 10px;
+      transition: border-color 0.2s;
+    }
+
+    .search-input:focus { border-color: var(--accent); }
+    .search-input::placeholder { color: var(--text-dim); }
+
+    /* ── User list ──────────────────────────── */
+    .user-list {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .user-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 13px 16px;
+      text-decoration: none;
+      opacity: 0;
+      animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      transition: border-color 0.15s, background 0.15s, transform 0.15s;
+    }
+
+    .user-item:hover {
+      border-color: var(--border-hover);
+      background: var(--bg-3);
+      transform: translateX(5px);
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
+    .user-handle {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13px;
+      font-weight: 400;
+      color: var(--text);
+      transition: color 0.15s;
+    }
+
+    .user-item:hover .user-handle { color: var(--accent); }
+
+    .user-arrow {
+      color: var(--text-dim);
+      font-size: 14px;
+      transition: transform 0.15s, color 0.15s;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .user-item:hover .user-arrow {
+      transform: translateX(5px);
+      color: var(--accent);
+    }
+
+    /* ── Empty state ────────────────────────── */
+    .empty-state {
+      text-align: center;
+      padding: 56px 24px;
+      background: var(--bg-2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+    }
+
+    .empty-icon { font-size: 44px; margin-bottom: 18px; }
+
+    .empty-title {
+      font-size: 20px;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+      margin-bottom: 8px;
+    }
+
+    .empty-sub {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 12px;
+      color: var(--text-muted);
+    }
+
+    /* ── Reset ──────────────────────────────── */
+    .reset-wrap { text-align: center; margin-top: 36px; }
+
+    .reset-btn {
+      background: none;
+      border: none;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 11px;
+      color: var(--text-muted);
+      cursor: pointer;
+      text-decoration: underline;
+      text-underline-offset: 3px;
+      transition: color 0.2s;
+    }
+
+    .reset-btn:hover { color: var(--text); }
+
+    /* ── Footer ─────────────────────────────── */
+    footer {
+      border-top: 1px solid var(--border);
+      padding: 28px 0;
+      margin-top: 48px;
+      text-align: center;
+    }
+
+    footer p {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+      letter-spacing: 0.05em;
+      line-height: 1.8;
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- Header -->
+  <header>
+    <div class="eyebrow">instagram tool</div>
+    <h1>ghosted<span class="dot">.</span></h1>
+    <p class="tagline">// find out who isn't following you back</p>
+  </header>
+
+  <!-- How it works -->
+  <div class="how-it-works" id="how-it-works">
+    <div class="section-label">How to get your files</div>
+    <ol class="steps">
+      <li>
+        <span class="step-num">1</span>
+        <p>Open Instagram → <strong>Settings</strong> → <strong>Your activity</strong> → <strong>Download your information</strong></p>
+      </li>
+      <li>
+        <span class="step-num">2</span>
+        <p>Select <strong>JSON format</strong>, choose date range <strong>All time</strong>, then request the download</p>
+      </li>
+      <li>
+        <span class="step-num">3</span>
+        <p>Once Instagram emails you, download and unzip the file. Open the folder <code>connections/followers_and_following/</code></p>
+      </li>
+      <li>
+        <span class="step-num">4</span>
+        <p>Upload <strong>followers_1.json</strong> and <strong>following.json</strong> below — everything runs <strong>locally in your browser</strong>, nothing leaves your device</p>
+      </li>
+    </ol>
+  </div>
+
+  <!-- Upload -->
+  <div id="upload-section">
+    <div class="section-label" style="margin-bottom: 14px;">Upload your files</div>
+    <div class="upload-grid">
+
+      <div class="drop-zone" id="followers-zone" tabindex="0" role="button" aria-label="Upload followers file">
+        <span class="drop-icon">👥</span>
+        <div class="drop-label">Followers</div>
+        <div class="drop-hint" id="followers-hint">followers_1.json</div>
+        <div class="drop-filename" id="followers-filename"></div>
+      </div>
+
+      <div class="drop-zone" id="following-zone" tabindex="0" role="button" aria-label="Upload following file">
+        <span class="drop-icon">✈️</span>
+        <div class="drop-label">Following</div>
+        <div class="drop-hint" id="following-hint">following.json</div>
+        <div class="drop-filename" id="following-filename"></div>
+      </div>
+
+    </div>
+
+    <!-- Hidden file inputs -->
+    <input type="file" id="followers-input" accept=".json" style="display:none">
+    <input type="file" id="following-input" accept=".json" style="display:none">
+
+    <div class="error-msg" id="error-msg"></div>
+    <button class="analyze-btn" id="analyze-btn" disabled>Analyze</button>
+  </div>
+
+  <!-- Results -->
+  <div id="results">
+
+    <div class="stats-grid">
+      <div class="stat-card">
+        <div class="stat-num" id="stat-followers">—</div>
+        <div class="stat-lbl">Followers</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-num" id="stat-following">—</div>
+        <div class="stat-lbl">Following</div>
+      </div>
+      <div class="stat-card hot">
+        <div class="stat-num" id="stat-ghosts">—</div>
+        <div class="stat-lbl">Not back</div>
+      </div>
+    </div>
+
+    <div class="list-controls">
+      <div class="section-label" style="margin-bottom:0">Not following you back</div>
+      <button class="copy-btn" id="copy-btn">Copy all</button>
+    </div>
+
+    <input type="text" class="search-input" id="search-input" placeholder="Search usernames…" autocomplete="off">
+
+    <div class="user-list" id="user-list"></div>
+
+    <div class="reset-wrap">
+      <button class="reset-btn" id="reset-btn">← start over</button>
+    </div>
+  </div>
+
+</div>
+
+<!-- Footer -->
+<footer>
+  <div class="container">
+    <p>all analysis runs locally in your browser<br>no data is ever uploaded, stored, or transmitted</p>
+  </div>
+</footer>
+
+<script>
+  'use strict';
+
+  // ── State ──────────────────────────────────────────────────────────────────
+  let followersData = null;
+  let followingData = null;
+  let ghostList    = [];
+
+  // ── DOM refs ───────────────────────────────────────────────────────────────
+  const followersZone    = document.getElementById('followers-zone');
+  const followingZone    = document.getElementById('following-zone');
+  const followersInput   = document.getElementById('followers-input');
+  const followingInput   = document.getElementById('following-input');
+  const followersHint    = document.getElementById('followers-hint');
+  const followingHint    = document.getElementById('following-hint');
+  const followersFName   = document.getElementById('followers-filename');
+  const followingFName   = document.getElementById('following-filename');
+  const analyzeBtn       = document.getElementById('analyze-btn');
+  const errorMsg         = document.getElementById('error-msg');
+  const resultsEl        = document.getElementById('results');
+  const uploadSection    = document.getElementById('upload-section');
+  const howItWorks       = document.getElementById('how-it-works');
+  const userListEl       = document.getElementById('user-list');
+  const searchInput      = document.getElementById('search-input');
+  const copyBtn          = document.getElementById('copy-btn');
+  const resetBtn         = document.getElementById('reset-btn');
+  const statFollowers    = document.getElementById('stat-followers');
+  const statFollowing    = document.getElementById('stat-following');
+  const statGhosts       = document.getElementById('stat-ghosts');
+
+  // ── JSON Parser ────────────────────────────────────────────────────────────
+  // Handles both the followers array format and the following object format
+  // from Instagram's data export.
+  function extractUsernames(raw) {
+    let parsed;
+    try { parsed = JSON.parse(raw); } catch { return null; }
+
+    const fromItems = items =>
+      items.flatMap(item =>
+        (item.string_list_data || []).map(d => d.value).filter(Boolean)
+      );
+
+    // Array = followers file
+    if (Array.isArray(parsed)) return fromItems(parsed);
+
+    // Object = following file (relationships_following key) or other variants
+    for (const key of Object.keys(parsed)) {
+      if (Array.isArray(parsed[key])) {
+        const result = fromItems(parsed[key]);
+        if (result.length > 0) return result;
+      }
+    }
+
+    return [];
+  }
+
+  // ── File reading ───────────────────────────────────────────────────────────
+  function readAsText(file) {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload  = e => resolve(e.target.result);
+      reader.onerror = ()  => reject(new Error('Failed to read file'));
+      reader.readAsText(file);
+    });
+  }
+
+  // ── Drop zone setup ────────────────────────────────────────────────────────
+  function setupZone(zone, input, hintEl, filenameEl, onLoaded) {
+    // Click to open picker
+    zone.addEventListener('click', () => input.click());
+    zone.addEventListener('keydown', e => {
+      if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
+    });
+
+    // Drag over / leave
+    zone.addEventListener('dragover', e => {
+      e.preventDefault();
+      zone.classList.add('drag-over');
+    });
+    zone.addEventListener('dragleave', e => {
+      if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
+    });
+
+    // Drop
+    zone.addEventListener('drop', async e => {
+      e.preventDefault();
+      zone.classList.remove('drag-over');
+      const file = e.dataTransfer.files[0];
+      if (file) await processFile(file, zone, hintEl, filenameEl, onLoaded);
+    });
+
+    // File input change
+    input.addEventListener('change', async e => {
+      const file = e.target.files[0];
+      if (file) await processFile(file, zone, hintEl, filenameEl, onLoaded);
+      input.value = ''; // allow re-selecting same file
+    });
+  }
+
+  async function processFile(file, zone, hintEl, filenameEl, onLoaded) {
+    hideError();
+    try {
+      const raw      = await readAsText(file);
+      const usernames = extractUsernames(raw);
+
+      if (usernames === null) {
+        showError('Could not parse the JSON file. Make sure you selected the correct export file.');
+        return;
+      }
+      if (usernames.length === 0) {
+        showError(`No usernames found in "${file.name}". Are you sure this is the right file?`);
+        return;
+      }
+
+      zone.classList.add('loaded');
+      hintEl.textContent     = '✓ loaded';
+      filenameEl.textContent = file.name;
+      onLoaded(usernames);
+      updateAnalyzeBtn();
+    } catch (err) {
+      showError('Could not read the file. Please try again.');
+    }
+  }
+
+  function showError(msg) { errorMsg.textContent = msg; errorMsg.style.display = 'block'; }
+  function hideError()     { errorMsg.style.display = 'none'; }
+
+  function updateAnalyzeBtn() {
+    analyzeBtn.disabled = !(followersData !== null && followingData !== null);
+  }
+
+  setupZone(followersZone, followersInput, followersHint, followersFName, data => { followersData = data; });
+  setupZone(followingZone, followingInput, followingHint, followingFName, data => { followingData = data; });
+
+  // ── Analyze ────────────────────────────────────────────────────────────────
+  analyzeBtn.addEventListener('click', () => {
+    const followersSet = new Set(followersData.map(u => u.toLowerCase()));
+    ghostList = followingData
+      .filter(u => !followersSet.has(u.toLowerCase()))
+      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+
+    statFollowers.textContent = followersData.length.toLocaleString();
+    statFollowing.textContent = followingData.length.toLocaleString();
+    statGhosts.textContent    = ghostList.length.toLocaleString();
+
+    renderList(ghostList);
+    searchInput.value = '';
+
+    uploadSection.style.display = 'none';
+    howItWorks.style.display    = 'none';
+    resultsEl.style.display     = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+
+  // ── Render list ────────────────────────────────────────────────────────────
+  function renderList(users) {
+    if (users.length === 0) {
+      userListEl.innerHTML = `
+        <div class="empty-state">
+          <div class="empty-icon">🎉</div>
+          <div class="empty-title">All clear!</div>
+          <div class="empty-sub">Everyone you follow also follows you back.</div>
+        </div>`;
+      return;
+    }
+
+    // Cap animation delay so large lists don't wait forever
+    userListEl.innerHTML = users.map((username, i) => `
+      <a class="user-item"
+         href="https://www.instagram.com/${encodeURIComponent(username)}/"
+         target="_blank"
+         rel="noopener noreferrer"
+         style="animation-delay:${Math.min(i * 18, 900)}ms">
+        <span class="user-handle">@${escapeHtml(username)}</span>
+        <span class="user-arrow">→</span>
+      </a>`).join('');
+  }
+
+  function escapeHtml(s) {
+    return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+  }
+
+  // ── Search ─────────────────────────────────────────────────────────────────
+  searchInput.addEventListener('input', () => {
+    const q = searchInput.value.trim().toLowerCase();
+    renderList(q ? ghostList.filter(u => u.toLowerCase().includes(q)) : ghostList);
+  });
+
+  // ── Copy all ───────────────────────────────────────────────────────────────
+  copyBtn.addEventListener('click', () => {
+    if (!ghostList.length) return;
+    navigator.clipboard.writeText(ghostList.join('\n')).then(() => {
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy all'; }, 2000);
+    }).catch(() => {
+      // Fallback for non-https or older browsers
+      const ta = document.createElement('textarea');
+      ta.value = ghostList.join('\n');
+      ta.style.position = 'fixed';
+      ta.style.opacity  = '0';
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      copyBtn.textContent = 'Copied!';
+      setTimeout(() => { copyBtn.textContent = 'Copy all'; }, 2000);
+    });
+  });
+
+  // ── Reset ──────────────────────────────────────────────────────────────────
+  resetBtn.addEventListener('click', () => {
+    followersData = null;
+    followingData = null;
+    ghostList     = [];
+
+    [followersZone, followingZone].forEach(z => z.classList.remove('loaded', 'drag-over'));
+    followersHint.textContent  = 'followers_1.json';
+    followingHint.textContent  = 'following.json';
+    followersFName.textContent = '';
+    followingFName.textContent = '';
+
+    resultsEl.style.display     = 'none';
+    uploadSection.style.display = '';
+    howItWorks.style.display    = '';
+    analyzeBtn.disabled         = true;
+    searchInput.value           = '';
+    hideError();
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+  });
+</script>
+</body>
+</html>
