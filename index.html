@@ -654,10 +654,10 @@
   function extractUsernames(raw) {
     const trimmed = raw.trimStart();
 
-    // HTML format: extract usernames from href="https://www.instagram.com/username"
+    // HTML format: covers both /username and /_u/username link styles
     if (trimmed.startsWith('<') || trimmed.toLowerCase().startsWith('<!')) {
-      const re = /href="https?:\/\/(?:www\.)?instagram\.com\/([^/"?#]+)\/?"/gi;
-      const SKIP = new Set(['p','explore','accounts','stories','direct','reels','tv','_n','web']);
+      const re = /href="https?:\/\/(?:www\.)?instagram\.com\/(?:_u\/)?([^/"?#]+)\/?"/gi;
+      const SKIP = new Set(['p','explore','accounts','stories','direct','reels','tv','_n','web','_u']);
       const usernames = [];
       let m;
       while ((m = re.exec(raw)) !== null) {
