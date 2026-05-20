@@ -536,7 +536,7 @@
       </li>
       <li>
         <span class="step-num">2</span>
-        <p>Select <strong>JSON format</strong>, choose date range <strong>All time</strong>, then request the download</p>
+        <p>Choose date range <strong>All time</strong>, pick any format (HTML or JSON), then request the download</p>
       </li>
       <li>
         <span class="step-num">3</span>
@@ -544,7 +544,7 @@
       </li>
       <li>
         <span class="step-num">4</span>
-        <p>Upload <strong>followers_1.json</strong> and <strong>following.json</strong> below — everything runs <strong>locally in your browser</strong>, nothing leaves your device</p>
+        <p>Upload <strong>followers_1.html</strong> (or .json) and <strong>following.html</strong> (or .json) below — everything runs <strong>locally in your browser</strong>, nothing leaves your device</p>
       </li>
     </ol>
   </div>
@@ -557,22 +557,22 @@
       <div class="drop-zone" id="followers-zone" tabindex="0" role="button" aria-label="Upload followers file">
         <span class="drop-icon">👥</span>
         <div class="drop-label">Followers</div>
-        <div class="drop-hint" id="followers-hint">followers_1.json</div>
+        <div class="drop-hint" id="followers-hint">followers_1.html / .json</div>
         <div class="drop-filename" id="followers-filename"></div>
       </div>
 
       <div class="drop-zone" id="following-zone" tabindex="0" role="button" aria-label="Upload following file">
         <span class="drop-icon">✈️</span>
         <div class="drop-label">Following</div>
-        <div class="drop-hint" id="following-hint">following.json</div>
+        <div class="drop-hint" id="following-hint">following.html / .json</div>
         <div class="drop-filename" id="following-filename"></div>
       </div>
 
     </div>
 
     <!-- Hidden file inputs -->
-    <input type="file" id="followers-input" accept=".json" style="display:none">
-    <input type="file" id="following-input" accept=".json" style="display:none">
+    <input type="file" id="followers-input" accept=".json,.html,.htm" style="display:none">
+    <input type="file" id="following-input" accept=".json,.html,.htm" style="display:none">
 
     <div class="error-msg" id="error-msg"></div>
     <button class="analyze-btn" id="analyze-btn" disabled>Analyze</button>
@@ -649,10 +649,25 @@
   const statFollowing    = document.getElementById('stat-following');
   const statGhosts       = document.getElementById('stat-ghosts');
 
-  // ── JSON Parser ────────────────────────────────────────────────────────────
-  // Handles both the followers array format and the following object format
-  // from Instagram's data export.
+  // ── Parser ─────────────────────────────────────────────────────────────────
+  // Handles Instagram's HTML export (href links) and JSON export formats.
   function extractUsernames(raw) {
+    const trimmed = raw.trimStart();
+
+    // HTML format: extract usernames from href="https://www.instagram.com/username"
+    if (trimmed.startsWith('<') || trimmed.toLowerCase().startsWith('<!')) {
+      const re = /href="https?:\/\/(?:www\.)?instagram\.com\/([^/"?#]+)\/?"/gi;
+      const SKIP = new Set(['p','explore','accounts','stories','direct','reels','tv','_n','web']);
+      const usernames = [];
+      let m;
+      while ((m = re.exec(raw)) !== null) {
+        const u = m[1];
+        if (!SKIP.has(u.toLowerCase())) usernames.push(u);
+      }
+      return usernames;
+    }
+
+    // JSON format
     let parsed;
     try { parsed = JSON.parse(raw); } catch { return null; }
 
@@ -661,10 +676,8 @@
         (item.string_list_data || []).map(d => d.value).filter(Boolean)
       );
 
-    // Array = followers file
     if (Array.isArray(parsed)) return fromItems(parsed);
 
-    // Object = following file (relationships_following key) or other variants
     for (const key of Object.keys(parsed)) {
       if (Array.isArray(parsed[key])) {
         const result = fromItems(parsed[key]);
