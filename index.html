@@ -386,6 +386,39 @@
       color: var(--text);
     }
 
+    .sort-bar {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+
+    .sort-btn {
+      background: var(--bg-3);
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      color: var(--text-muted);
+      font-family: 'Syne', sans-serif;
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      padding: 7px 12px;
+      cursor: pointer;
+      transition: border-color 0.15s, color 0.15s, background 0.15s;
+    }
+
+    .sort-btn:hover {
+      border-color: var(--border-hover);
+      color: var(--text);
+    }
+
+    .sort-btn.active {
+      background: var(--accent-sub);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
     .search-input {
       width: 100%;
       background: var(--bg-2);
@@ -466,6 +499,16 @@
     }
 
     .user-item:hover .user-handle { color: var(--accent); }
+
+    .user-left { display: flex; flex-direction: column; gap: 2px; }
+
+    .user-date {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 10px;
+      color: var(--text-dim);
+    }
+
+    .user-item:hover .user-date { color: var(--text-muted); }
 
     .user-arrow {
       color: var(--text-dim);
@@ -623,6 +666,12 @@
       <button class="copy-btn" id="copy-btn">Copy all</button>
     </div>
 
+    <div class="sort-bar">
+      <button class="sort-btn active" data-sort="alpha">A → Z</button>
+      <button class="sort-btn" data-sort="oldest">Oldest follow</button>
+      <button class="sort-btn" data-sort="newest">Newest follow</button>
+    </div>
+
     <div style="position:relative">
       <input type="text" class="search-input" id="search-input" placeholder="Search usernames…" autocomplete="off" style="padding-right:80px">
       <button class="clear-search-btn" id="clear-search-btn" style="display:none">✕ clear</button>
@@ -680,30 +729,30 @@
     const trimmed = raw.trimStart();
 
     // HTML format: covers both /username and /_u/username link styles
+    // Timestamps not available in HTML exports.
     if (trimmed.startsWith('<') || trimmed.toLowerCase().startsWith('<!')) {
       const re = /href="https?:\/\/(?:www\.)?instagram\.com\/(?:_u\/)?([^/"?#]+)\/?"/gi;
       const SKIP = new Set(['p','explore','accounts','stories','direct','reels','tv','_n','web','_u']);
-      const usernames = [];
+      const entries = [];
       let m;
       while ((m = re.exec(raw)) !== null) {
         const u = m[1];
-        if (!SKIP.has(u.toLowerCase())) usernames.push(u);
+        if (!SKIP.has(u.toLowerCase())) entries.push({ username: u, timestamp: null });
       }
-      return usernames;
+      return entries;
     }
 
-    // JSON format
+    // JSON format — returns {username, timestamp} objects
     let parsed;
     try { parsed = JSON.parse(raw); } catch { return null; }
 
     const fromItems = items =>
       items.map(item => {
-        // Followers format: username in string_list_data[].value
-        const val = (item.string_list_data || []).map(d => d.value).find(Boolean);
-        if (val) return val;
-        // Following format: username in title, string_list_data has no value
-        if (item.title) return item.title;
-        return null;
+        const d = (item.string_list_data || [])[0] || {};
+        // Followers: username in d.value; Following: username in item.title
+        const username = d.value || item.title || null;
+        const timestamp = d.timestamp || null;
+        return username ? { username, timestamp } : null;
       }).filter(Boolean);
 
     if (Array.isArray(parsed)) return fromItems(parsed);
@@ -796,18 +845,44 @@
   setupZone(followersZone, followersInput, followersHint, followersFName, data => { followersData = data; });
   setupZone(followingZone, followingInput, followingHint, followingFName, data => { followingData = data; });
 
+  // ── Sort ───────────────────────────────────────────────────────────────────
+  let currentSort = 'alpha';
+
+  function applySort(list) {
+    const sorted = [...list];
+    if (currentSort === 'alpha') {
+      sorted.sort((a, b) => a.username.localeCompare(b.username, undefined, { sensitivity: 'base' }));
+    } else if (currentSort === 'oldest') {
+      sorted.sort((a, b) => (a.timestamp || 0) - (b.timestamp || 0));
+    } else if (currentSort === 'newest') {
+      sorted.sort((a, b) => (b.timestamp || 0) - (a.timestamp || 0));
+    }
+    return sorted;
+  }
+
+  document.querySelectorAll('.sort-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+      currentSort = btn.dataset.sort;
+      document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const q = searchInput.value.trim().toLowerCase();
+      const base = q ? ghostList.filter(u => u.username.toLowerCase().includes(q)) : ghostList;
+      renderList(applySort(base));
+    });
+  });
+
   // ── Analyze ────────────────────────────────────────────────────────────────
   analyzeBtn.addEventListener('click', () => {
-    const followersSet = new Set(followersData.map(u => u.toLowerCase()));
-    ghostList = followingData
-      .filter(u => !followersSet.has(u.toLowerCase()))
-      .sort((a, b) => a.localeCompare(b, undefined, { sensitivity: 'base' }));
+    const followersSet = new Set(followersData.map(u => u.username.toLowerCase()));
+    ghostList = followingData.filter(u => !followersSet.has(u.username.toLowerCase()));
 
     statFollowers.textContent = followersData.length.toLocaleString();
     statFollowing.textContent = followingData.length.toLocaleString();
     statGhosts.textContent    = ghostList.length.toLocaleString();
 
-    renderList(ghostList);
+    currentSort = 'alpha';
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === 'alpha'));
+    renderList(applySort(ghostList));
     searchInput.value = '';
 
     uploadSection.style.display = 'none';
@@ -817,8 +892,13 @@
   });
 
   // ── Render list ────────────────────────────────────────────────────────────
-  function renderList(users) {
-    if (users.length === 0) {
+  function formatDate(ts) {
+    if (!ts) return '';
+    return new Date(ts * 1000).toLocaleDateString('en-US', { month: 'short', day: 'numeric', year: 'numeric' });
+  }
+
+  function renderList(items) {
+    if (items.length === 0) {
       userListEl.innerHTML = `
         <div class="empty-state">
           <div class="empty-icon">🎉</div>
@@ -828,14 +908,16 @@
       return;
     }
 
-    // Cap animation delay so large lists don't wait forever
-    userListEl.innerHTML = users.map((username, i) => `
+    userListEl.innerHTML = items.map(({ username, timestamp }, i) => `
       <a class="user-item"
          href="https://www.instagram.com/${encodeURIComponent(username)}/"
          target="_blank"
          rel="noopener noreferrer"
          style="animation-delay:${Math.min(i * 18, 900)}ms">
-        <span class="user-handle">@${escapeHtml(username)}</span>
+        <span class="user-left">
+          <span class="user-handle">@${escapeHtml(username)}</span>
+          ${timestamp ? `<span class="user-date">followed ${formatDate(timestamp)}</span>` : ''}
+        </span>
         <span class="user-arrow">→</span>
       </a>`).join('');
   }
@@ -850,26 +932,27 @@
   searchInput.addEventListener('input', () => {
     const q = searchInput.value.trim().toLowerCase();
     clearSearchBtn.style.display = q ? 'block' : 'none';
-    renderList(q ? ghostList.filter(u => u.toLowerCase().includes(q)) : ghostList);
+    const filtered = q ? ghostList.filter(u => u.username.toLowerCase().includes(q)) : ghostList;
+    renderList(applySort(filtered));
   });
 
   clearSearchBtn.addEventListener('click', () => {
     searchInput.value = '';
     clearSearchBtn.style.display = 'none';
     searchInput.focus();
-    renderList(ghostList);
+    renderList(applySort(ghostList));
   });
 
   // ── Copy all ───────────────────────────────────────────────────────────────
   copyBtn.addEventListener('click', () => {
     if (!ghostList.length) return;
-    navigator.clipboard.writeText(ghostList.join('\n')).then(() => {
+    navigator.clipboard.writeText(ghostList.map(u => u.username).join('\n')).then(() => {
       copyBtn.textContent = 'Copied!';
       setTimeout(() => { copyBtn.textContent = 'Copy all'; }, 2000);
     }).catch(() => {
       // Fallback for non-https or older browsers
       const ta = document.createElement('textarea');
-      ta.value = ghostList.join('\n');
+      ta.value = ghostList.map(u => u.username).join('\n');
       ta.style.position = 'fixed';
       ta.style.opacity  = '0';
       document.body.appendChild(ta);
@@ -888,10 +971,13 @@
     ghostList     = [];
 
     [followersZone, followingZone].forEach(z => z.classList.remove('loaded', 'drag-over'));
-    followersHint.textContent  = 'followers_1.json';
-    followingHint.textContent  = 'following.json';
+    followersHint.textContent  = 'followers_1.html / .json';
+    followingHint.textContent  = 'following.html / .json';
     followersFName.textContent = '';
     followingFName.textContent = '';
+
+    currentSort = 'alpha';
+    document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === 'alpha'));
 
     resultsEl.style.display     = 'none';
     uploadSection.style.display = '';
