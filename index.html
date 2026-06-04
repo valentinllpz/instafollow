@@ -697,9 +697,14 @@
     try { parsed = JSON.parse(raw); } catch { return null; }
 
     const fromItems = items =>
-      items.flatMap(item =>
-        (item.string_list_data || []).map(d => d.value).filter(Boolean)
-      );
+      items.map(item => {
+        // Followers format: username in string_list_data[].value
+        const val = (item.string_list_data || []).map(d => d.value).find(Boolean);
+        if (val) return val;
+        // Following format: username in title, string_list_data has no value
+        if (item.title) return item.title;
+        return null;
+      }).filter(Boolean);
 
     if (Array.isArray(parsed)) return fromItems(parsed);
 
