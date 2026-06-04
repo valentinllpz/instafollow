@@ -365,35 +365,8 @@
       flex-wrap: wrap;
     }
 
-    .copy-btn {
+    .sort-cycle-btn {
       flex-shrink: 0;
-      background: var(--bg-3);
-      border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text-muted);
-      font-family: 'Syne', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.12em;
-      text-transform: uppercase;
-      padding: 7px 14px;
-      cursor: pointer;
-      transition: border-color 0.15s, color 0.15s;
-    }
-
-    .copy-btn:hover {
-      border-color: var(--border-hover);
-      color: var(--text);
-    }
-
-    .sort-bar {
-      display: flex;
-      gap: 6px;
-      margin-bottom: 12px;
-      flex-wrap: wrap;
-    }
-
-    .sort-btn {
       background: var(--bg-3);
       border: 1px solid var(--border);
       border-radius: 8px;
@@ -403,17 +376,17 @@
       font-weight: 700;
       letter-spacing: 0.1em;
       text-transform: uppercase;
-      padding: 7px 12px;
+      padding: 7px 14px;
       cursor: pointer;
       transition: border-color 0.15s, color 0.15s, background 0.15s;
     }
 
-    .sort-btn:hover {
+    .sort-cycle-btn:hover {
       border-color: var(--border-hover);
       color: var(--text);
     }
 
-    .sort-btn.active {
+    .sort-cycle-btn.active {
       background: var(--accent-sub);
       border-color: var(--accent);
       color: var(--accent);
@@ -663,13 +636,7 @@
 
     <div class="list-controls">
       <div class="section-label" style="margin-bottom:0">Not following you back</div>
-      <button class="copy-btn" id="copy-btn">Copy all</button>
-    </div>
-
-    <div class="sort-bar">
-      <button class="sort-btn active" data-sort="alpha">A → Z</button>
-      <button class="sort-btn" data-sort="oldest">Oldest follow</button>
-      <button class="sort-btn" data-sort="newest">Newest follow</button>
+      <button class="sort-cycle-btn" id="sort-cycle-btn">↕ A → Z</button>
     </div>
 
     <div style="position:relative">
@@ -717,7 +684,6 @@
   const howItWorks       = document.getElementById('how-it-works');
   const userListEl       = document.getElementById('user-list');
   const searchInput      = document.getElementById('search-input');
-  const copyBtn          = document.getElementById('copy-btn');
   const resetBtn         = document.getElementById('reset-btn');
   const statFollowers    = document.getElementById('stat-followers');
   const statFollowing    = document.getElementById('stat-following');
@@ -846,7 +812,13 @@
   setupZone(followingZone, followingInput, followingHint, followingFName, data => { followingData = data; });
 
   // ── Sort ───────────────────────────────────────────────────────────────────
+  const SORT_CYCLE = [
+    { key: 'alpha',  label: '↕ A → Z' },
+    { key: 'oldest', label: '↕ Oldest first' },
+    { key: 'newest', label: '↕ Newest first' },
+  ];
   let currentSort = 'alpha';
+  const sortCycleBtn = document.getElementById('sort-cycle-btn');
 
   function applySort(list) {
     const sorted = [...list];
@@ -860,15 +832,19 @@
     return sorted;
   }
 
-  document.querySelectorAll('.sort-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      currentSort = btn.dataset.sort;
-      document.querySelectorAll('.sort-btn').forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      const q = searchInput.value.trim().toLowerCase();
-      const base = q ? ghostList.filter(u => u.username.toLowerCase().includes(q)) : ghostList;
-      renderList(applySort(base));
-    });
+  function updateSortBtn() {
+    const s = SORT_CYCLE.find(s => s.key === currentSort);
+    sortCycleBtn.textContent = s.label;
+    sortCycleBtn.classList.toggle('active', currentSort !== 'alpha');
+  }
+
+  sortCycleBtn.addEventListener('click', () => {
+    const idx = SORT_CYCLE.findIndex(s => s.key === currentSort);
+    currentSort = SORT_CYCLE[(idx + 1) % SORT_CYCLE.length].key;
+    updateSortBtn();
+    const q = searchInput.value.trim().toLowerCase();
+    const base = q ? ghostList.filter(u => u.username.toLowerCase().includes(q)) : ghostList;
+    renderList(applySort(base));
   });
 
   // ── Analyze ────────────────────────────────────────────────────────────────
@@ -881,7 +857,7 @@
     statGhosts.textContent    = ghostList.length.toLocaleString();
 
     currentSort = 'alpha';
-    document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === 'alpha'));
+    updateSortBtn();
     renderList(applySort(ghostList));
     searchInput.value = '';
 
@@ -943,27 +919,6 @@
     renderList(applySort(ghostList));
   });
 
-  // ── Copy all ───────────────────────────────────────────────────────────────
-  copyBtn.addEventListener('click', () => {
-    if (!ghostList.length) return;
-    navigator.clipboard.writeText(ghostList.map(u => u.username).join('\n')).then(() => {
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => { copyBtn.textContent = 'Copy all'; }, 2000);
-    }).catch(() => {
-      // Fallback for non-https or older browsers
-      const ta = document.createElement('textarea');
-      ta.value = ghostList.map(u => u.username).join('\n');
-      ta.style.position = 'fixed';
-      ta.style.opacity  = '0';
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      copyBtn.textContent = 'Copied!';
-      setTimeout(() => { copyBtn.textContent = 'Copy all'; }, 2000);
-    });
-  });
-
   // ── Reset ──────────────────────────────────────────────────────────────────
   resetBtn.addEventListener('click', () => {
     followersData = null;
@@ -977,7 +932,7 @@
     followingFName.textContent = '';
 
     currentSort = 'alpha';
-    document.querySelectorAll('.sort-btn').forEach(b => b.classList.toggle('active', b.dataset.sort === 'alpha'));
+    updateSortBtn();
 
     resultsEl.style.display     = 'none';
     uploadSection.style.display = '';
