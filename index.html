@@ -19,9 +19,12 @@
       --ink:          oklch(0.97 0.000 0);
       --muted:        oklch(0.54 0.000 0);
       --dim:          oklch(0.32 0.000 0);
-      --primary:      oklch(0.68 0.130 150);
-      --primary-glow: oklch(0.68 0.130 150 / 0.12);
-      --primary-sub:  oklch(0.68 0.130 150 / 0.07);
+      /* Instagram-inspired gradient — orange → pink → purple, darkened for depth */
+      --accent-a:     oklch(0.60 0.240 30);
+      --accent-b:     oklch(0.55 0.270 345);
+      --accent-c:     oklch(0.45 0.220 290);
+      --accent-b-glow: oklch(0.55 0.270 345 / 0.12);
+      --accent-b-sub:  oklch(0.55 0.270 345 / 0.07);
       --r-sm: 6px;
       --r-md: 10px;
       --r-lg: 14px;
@@ -30,9 +33,7 @@
     html { scroll-behavior: smooth; }
 
     body {
-      background:
-        radial-gradient(ellipse 90% 45% at 50% -10%, var(--primary-glow) 0%, transparent 65%),
-        var(--bg);
+      background: var(--bg);
       color: var(--ink);
       font-family: 'Space Grotesk', system-ui, sans-serif;
       min-height: 100vh;
@@ -40,7 +41,7 @@
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Noise grain overlay */
+    /* Noise grain */
     body::after {
       content: '';
       position: fixed;
@@ -52,7 +53,48 @@
       background-size: 200px 200px;
     }
 
+    /* ── Animated gradient aura ─────────────── */
+    .aura-bg {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      z-index: 0;
+      background:
+        radial-gradient(ellipse 70% 55% at 25% -10%, oklch(0.55 0.270 345 / 0.22), transparent 60%),
+        radial-gradient(ellipse 55% 40% at 75% -5%,  oklch(0.60 0.240 30  / 0.16), transparent 55%),
+        radial-gradient(ellipse 40% 30% at 50%  8%,  oklch(0.45 0.220 290 / 0.10), transparent 50%);
+      animation: auraBreath 9s ease-in-out infinite;
+    }
+
+    @keyframes auraBreath {
+      0%, 100% { opacity: 0.7; transform: scale(1); }
+      50%       { opacity: 1;   transform: scale(1.07); }
+    }
+
+    @keyframes gradientFlow {
+      0%, 100% { background-position: 0% 50%; }
+      50%       { background-position: 100% 50%; }
+    }
+
+    @keyframes dotCycle {
+      0%,  100% { color: var(--accent-a); }
+      33%        { color: var(--accent-b); }
+      66%        { color: var(--accent-c); }
+    }
+
+    @keyframes fadeUp {
+      from { opacity: 0; transform: translateY(24px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes slideIn {
+      from { opacity: 0; transform: translateX(-10px); }
+      to   { opacity: 1; transform: translateX(0); }
+    }
+
     .container {
+      position: relative;
+      z-index: 1;
       max-width: 660px;
       margin: 0 auto;
       padding: 0 24px;
@@ -60,7 +102,7 @@
 
     /* ── Header ─────────────────────────────── */
     header {
-      padding: 80px 0 64px;
+      padding: 88px 0 48px;
       text-align: center;
     }
 
@@ -74,13 +116,42 @@
       text-wrap: balance;
     }
 
-    h1 .dot { color: var(--primary); }
+    h1 .dot {
+      animation: dotCycle 5s ease-in-out infinite;
+    }
 
     .tagline {
-      margin-top: 22px;
+      margin-top: 20px;
       font-size: 0.875rem;
       font-weight: 400;
       color: var(--muted);
+    }
+
+    /* ── Trust bar ──────────────────────────── */
+    .trust-bar {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 24px;
+      margin-top: 28px;
+      flex-wrap: wrap;
+    }
+
+    .trust-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.6875rem;
+      font-weight: 500;
+      color: var(--dim);
+      letter-spacing: 0.01em;
+    }
+
+    .trust-item svg {
+      width: 12px;
+      height: 12px;
+      flex-shrink: 0;
+      opacity: 0.7;
     }
 
     /* ── Section titles ─────────────────────── */
@@ -98,7 +169,26 @@
       border: 1px solid var(--border);
       border-radius: var(--r-lg);
       padding: 24px;
+      margin-top: 40px;
       margin-bottom: 32px;
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* gradient accent line at top of card */
+    .how-it-works::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 24px;
+      right: 24px;
+      height: 1px;
+      background: linear-gradient(to right,
+        oklch(0.60 0.240 30  / 0.4),
+        oklch(0.55 0.270 345 / 0.7),
+        oklch(0.45 0.220 290 / 0.4)
+      );
+      pointer-events: none;
     }
 
     .steps {
@@ -118,15 +208,14 @@
       flex-shrink: 0;
       width: 22px;
       height: 22px;
-      background: var(--surface-2);
-      border: 1px solid var(--border);
+      background: linear-gradient(135deg, var(--accent-a), var(--accent-b));
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       font-size: 10px;
       font-weight: 700;
-      color: var(--primary);
+      color: var(--ink);
       margin-top: 2px;
     }
 
@@ -148,7 +237,7 @@
       padding: 1px 6px;
       font-family: 'JetBrains Mono', ui-monospace, monospace;
       font-size: 0.6875rem;
-      color: var(--primary);
+      color: var(--accent-b);
     }
 
     /* ── Upload ─────────────────────────────── */
@@ -170,37 +259,42 @@
       padding: 32px 20px 28px;
       text-align: center;
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: border-color 0.2s, background 0.2s, box-shadow 0.2s, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
       background: var(--surface);
       user-select: none;
     }
 
     .drop-zone:hover {
-      border-color: var(--primary);
-      background: var(--primary-sub);
+      border-color: oklch(0.55 0.270 345 / 0.55);
+      background: var(--accent-b-sub);
     }
 
     .drop-zone.drag-over {
-      border-color: var(--primary);
-      background: var(--primary-sub);
+      border-color: oklch(0.55 0.270 345 / 0.55);
+      background: var(--accent-b-sub);
       transform: scale(1.02);
     }
 
     .drop-zone.loaded {
       border-style: solid;
-      border-color: var(--primary);
-      background: var(--primary-sub);
+      border-color: oklch(0.55 0.270 345 / 0.50);
+      background: linear-gradient(135deg, oklch(0.60 0.240 30 / 0.05), oklch(0.45 0.220 290 / 0.08));
+      box-shadow: 0 0 20px oklch(0.55 0.270 345 / 0.10);
     }
 
-    .drop-icon {
-      font-size: 32px;
+    /* SVG icon in drop zones */
+    .drop-svg {
+      width: 34px;
+      height: 34px;
       display: block;
-      margin-bottom: 12px;
-      line-height: 1;
-      transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
+      margin: 0 auto 14px;
+      color: var(--muted);
+      transition: color 0.2s, transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
-    .drop-zone:hover .drop-icon { transform: scale(1.12) translateY(-2px); }
+    .drop-zone:hover .drop-svg { color: var(--accent-b); transform: scale(1.10) translateY(-2px); }
+    .drop-zone.drag-over .drop-svg { color: var(--accent-b); }
+    .drop-zone.loaded .drop-svg { color: var(--accent-b); }
 
     .drop-label {
       font-size: 0.8125rem;
@@ -213,18 +307,17 @@
 
     .drop-hint {
       font-size: 0.6875rem;
-      font-weight: 400;
       color: var(--muted);
       transition: color 0.2s;
     }
 
-    .drop-zone.loaded .drop-hint { color: var(--primary); }
+    .drop-zone.loaded .drop-hint { color: var(--accent-b); }
 
     .drop-filename {
       margin-top: 8px;
-      font-size: 0.6875rem;
-      font-weight: 400;
-      color: var(--primary);
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.625rem;
+      color: var(--accent-b);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -239,7 +332,6 @@
       border-radius: var(--r-sm);
       padding: 12px 16px;
       font-size: 0.875rem;
-      font-weight: 400;
       color: oklch(0.82 0.12 25);
       display: none;
     }
@@ -249,8 +341,15 @@
       width: 100%;
       margin-top: 14px;
       padding: 17px;
-      background: var(--primary);
-      color: var(--bg);
+      background: linear-gradient(135deg,
+        var(--accent-a),
+        var(--accent-b),
+        var(--accent-c),
+        var(--accent-a)
+      );
+      background-size: 300% 300%;
+      animation: gradientFlow 4s ease infinite;
+      color: var(--ink);
       border: none;
       border-radius: var(--r-md);
       font-family: 'Space Grotesk', system-ui, sans-serif;
@@ -259,15 +358,16 @@
       letter-spacing: 0.12em;
       text-transform: uppercase;
       cursor: pointer;
-      transition: background 0.2s, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      transition: opacity 0.2s, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .analyze-btn:hover:not(:disabled) { background: oklch(0.72 0.130 150); }
+    .analyze-btn:hover:not(:disabled) { opacity: 0.88; }
     .analyze-btn:active:not(:disabled) { transform: scale(0.985); }
-    .analyze-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
+    .analyze-btn:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 3px; }
 
     .analyze-btn:disabled {
       background: var(--surface-2);
+      animation: none;
       color: var(--dim);
       cursor: not-allowed;
     }
@@ -277,11 +377,6 @@
       display: none;
       padding-bottom: 64px;
       animation: fadeUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-    }
-
-    @keyframes fadeUp {
-      from { opacity: 0; transform: translateY(24px); }
-      to   { opacity: 1; transform: translateY(0); }
     }
 
     .stats-grid {
@@ -300,8 +395,12 @@
     }
 
     .stat-card.hot {
-      border-color: var(--primary);
-      background: var(--primary-sub);
+      border-color: oklch(0.55 0.270 345 / 0.45);
+      background: linear-gradient(135deg,
+        oklch(0.60 0.240 30  / 0.07),
+        oklch(0.45 0.220 290 / 0.10)
+      );
+      box-shadow: 0 0 28px oklch(0.55 0.270 345 / 0.12);
     }
 
     .stat-num {
@@ -313,7 +412,7 @@
       font-variant-numeric: tabular-nums;
     }
 
-    .stat-card.hot .stat-num { color: var(--primary); }
+    .stat-card.hot .stat-num { color: var(--accent-b); }
 
     .stat-lbl {
       font-size: 0.5625rem;
@@ -356,18 +455,9 @@
       transition: border-color 0.15s, color 0.15s, background 0.15s;
     }
 
-    .sort-cycle-btn:hover {
-      border-color: var(--border-hover);
-      color: var(--ink);
-    }
-
-    .sort-cycle-btn.active {
-      background: var(--primary-sub);
-      border-color: var(--primary);
-      color: var(--primary);
-    }
-
-    .sort-cycle-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
+    .sort-cycle-btn:hover { border-color: var(--border-hover); color: var(--ink); }
+    .sort-cycle-btn.active { background: var(--accent-b-sub); border-color: var(--accent-b); color: var(--accent-b); }
+    .sort-cycle-btn:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
 
     .search-input {
       width: 100%;
@@ -384,7 +474,7 @@
       transition: border-color 0.2s;
     }
 
-    .search-input:focus { border-color: var(--primary); }
+    .search-input:focus { border-color: var(--accent-b); }
     .search-input::placeholder { color: var(--muted); }
 
     .clear-search-btn {
@@ -401,20 +491,13 @@
       font-weight: 500;
       padding: 4px 8px;
       cursor: pointer;
-      transition: color 0.15s, border-color 0.15s, background 0.15s;
+      transition: background 0.15s, border-color 0.15s;
     }
 
-    .clear-search-btn:hover {
-      background: var(--border);
-      border-color: var(--border-hover);
-    }
+    .clear-search-btn:hover { background: var(--border); border-color: var(--border-hover); }
 
     /* ── User list ──────────────────────────── */
-    .user-list {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-    }
+    .user-list { display: flex; flex-direction: column; gap: 4px; }
 
     .user-item {
       display: flex;
@@ -436,12 +519,7 @@
       transform: translateX(4px);
     }
 
-    .user-item:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
-
-    @keyframes slideIn {
-      from { opacity: 0; transform: translateX(-10px); }
-      to   { opacity: 1; transform: translateX(0); }
-    }
+    .user-item:focus-visible { outline: 2px solid var(--accent-b); outline-offset: 2px; }
 
     .user-handle {
       font-family: 'JetBrains Mono', ui-monospace, monospace;
@@ -451,7 +529,7 @@
       transition: color 0.15s;
     }
 
-    .user-item:hover .user-handle { color: var(--primary); }
+    .user-item:hover .user-handle { color: var(--accent-b); }
 
     .user-left { display: flex; flex-direction: column; gap: 3px; }
 
@@ -467,10 +545,7 @@
       transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s;
     }
 
-    .user-item:hover .user-arrow {
-      transform: translateX(4px);
-      color: var(--primary);
-    }
+    .user-item:hover .user-arrow { transform: translateX(4px); color: var(--accent-b); }
 
     /* ── Empty state ────────────────────────── */
     .empty-state {
@@ -481,7 +556,17 @@
       border-radius: var(--r-lg);
     }
 
-    .empty-icon { font-size: 44px; margin-bottom: 18px; }
+    .empty-icon {
+      display: flex;
+      justify-content: center;
+      margin-bottom: 18px;
+    }
+
+    .empty-icon svg {
+      width: 44px;
+      height: 44px;
+      color: var(--accent-b);
+    }
 
     .empty-title {
       font-size: 1.25rem;
@@ -490,10 +575,7 @@
       margin-bottom: 8px;
     }
 
-    .empty-sub {
-      font-size: 0.875rem;
-      color: var(--muted);
-    }
+    .empty-sub { font-size: 0.875rem; color: var(--muted); }
 
     /* ── Reset ──────────────────────────────── */
     .reset-wrap { text-align: center; margin-top: 36px; }
@@ -503,7 +585,6 @@
       border: none;
       font-family: 'Space Grotesk', system-ui, sans-serif;
       font-size: 0.875rem;
-      font-weight: 400;
       color: var(--muted);
       cursor: pointer;
       text-decoration: underline;
@@ -515,6 +596,8 @@
 
     /* ── Footer ─────────────────────────────── */
     footer {
+      position: relative;
+      z-index: 1;
       border-top: 1px solid var(--border);
       padding: 28px 0;
       margin-top: 48px;
@@ -523,21 +606,30 @@
 
     footer p {
       font-size: 0.75rem;
-      font-weight: 400;
       color: var(--muted);
       line-height: 1.8;
     }
 
     /* ── Reduced motion ─────────────────────── */
     @media (prefers-reduced-motion: reduce) {
-      .user-item { animation: none !important; opacity: 1 !important; }
-      #results   { animation: none !important; }
-      .drop-zone { transition: border-color 0.15s, background 0.15s !important; transform: none !important; }
-      .drop-icon { transition: none !important; }
+      .aura-bg    { animation: none !important; }
+      h1 .dot     { animation: none !important; color: var(--accent-b) !important; }
+      .analyze-btn:not(:disabled) {
+        animation: none !important;
+        background: var(--accent-b) !important;
+        background-size: auto !important;
+      }
+      .user-item  { animation: none !important; opacity: 1 !important; }
+      #results    { animation: none !important; }
+      .drop-zone  { transition: border-color 0.15s, background 0.15s !important; transform: none !important; }
+      .drop-svg   { transition: color 0.15s !important; transform: none !important; }
     }
   </style>
 </head>
 <body>
+
+<!-- Animated gradient aura — sits behind all content -->
+<div class="aura-bg" aria-hidden="true"></div>
 
 <div class="container">
 
@@ -545,6 +637,28 @@
   <header>
     <h1>ghosted<span class="dot">.</span></h1>
     <p class="tagline">find out who isn't following you back</p>
+
+    <!-- Trust bar -->
+    <div class="trust-bar">
+      <span class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
+        </svg>
+        no account needed
+      </span>
+      <span class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/>
+        </svg>
+        runs in your browser
+      </span>
+      <span class="trust-item">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.94 17.94A10.07 10.07 0 0 1 12 20c-7 0-11-8-11-8a18.45 18.45 0 0 1 5.06-5.94M9.9 4.24A9.12 9.12 0 0 1 12 4c7 0 11 8 11 8a18.5 18.5 0 0 1-2.16 3.19m-6.72-1.07a3 3 0 1 1-4.24-4.24"/><line x1="1" y1="1" x2="23" y2="23"/>
+        </svg>
+        zero data uploaded
+      </span>
+    </div>
   </header>
 
   <!-- How it works -->
@@ -575,14 +689,26 @@
     <div class="upload-grid">
 
       <div class="drop-zone" id="followers-zone" tabindex="0" role="button" aria-label="Upload followers file">
-        <span class="drop-icon">👥</span>
+        <!-- Users / group icon -->
+        <svg class="drop-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+          <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+        </svg>
         <div class="drop-label">Followers</div>
         <div class="drop-hint" id="followers-hint">followers_1.html / .json</div>
         <div class="drop-filename" id="followers-filename"></div>
       </div>
 
       <div class="drop-zone" id="following-zone" tabindex="0" role="button" aria-label="Upload following file">
-        <span class="drop-icon">✈️</span>
+        <!-- User-plus icon (people you follow) -->
+        <svg class="drop-svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+          <circle cx="9" cy="7" r="4"/>
+          <line x1="19" y1="8" x2="19" y2="14"/>
+          <line x1="22" y1="11" x2="16" y2="11"/>
+        </svg>
         <div class="drop-label">Following</div>
         <div class="drop-hint" id="following-hint">following.html / .json</div>
         <div class="drop-filename" id="following-filename"></div>
@@ -680,7 +806,7 @@
       const start = performance.now();
       const tick = (now) => {
         const p = Math.min((now - start) / duration, 1);
-        const v = p === 1 ? 1 : 1 - Math.pow(2, -10 * p); // ease-out-expo
+        const v = p === 1 ? 1 : 1 - Math.pow(2, -10 * p);
         el.textContent = Math.round(v * target).toLocaleString();
         if (p < 1) requestAnimationFrame(tick);
       };
@@ -867,7 +993,12 @@
     if (items.length === 0) {
       userListEl.innerHTML = `
         <div class="empty-state">
-          <div class="empty-icon">🎉</div>
+          <div class="empty-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/>
+              <polyline points="22 4 12 14.01 9 11.01"/>
+            </svg>
+          </div>
           <div class="empty-title">All clear!</div>
           <div class="empty-sub">Everyone you follow also follows you back.</div>
         </div>`;
