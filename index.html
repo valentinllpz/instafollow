@@ -6,41 +6,41 @@
   <title>ghosted. — instagram follower checker</title>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=JetBrains+Mono:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400&family=Space+Grotesk:wght@400;500;600;700&family=Syne:wght@800&display=swap" rel="stylesheet">
   <style>
     *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
 
     :root {
-      --bg:           #0A0A0B;
-      --bg-2:         #111113;
-      --bg-3:         #18181B;
-      --border:       #27272A;
-      --border-hover: #3F3F46;
-      --text:         #FAFAF9;
-      --text-muted:   #71717A;
-      --text-dim:     #3F3F46;
-      --accent:       #FF4D00;
-      --accent-glow:  rgba(255, 77, 0, 0.12);
-      --accent-sub:   rgba(255, 77, 0, 0.07);
-      --green:        #22C55E;
-      --green-sub:    rgba(34, 197, 94, 0.08);
-      --radius:       12px;
+      --bg:           oklch(0.07 0.000 0);
+      --surface:      oklch(0.12 0.000 0);
+      --surface-2:    oklch(0.17 0.000 0);
+      --border:       oklch(0.22 0.000 0);
+      --border-hover: oklch(0.32 0.000 0);
+      --ink:          oklch(0.97 0.000 0);
+      --muted:        oklch(0.54 0.000 0);
+      --dim:          oklch(0.32 0.000 0);
+      --primary:      oklch(0.68 0.130 150);
+      --primary-glow: oklch(0.68 0.130 150 / 0.12);
+      --primary-sub:  oklch(0.68 0.130 150 / 0.07);
+      --r-sm: 6px;
+      --r-md: 10px;
+      --r-lg: 14px;
     }
 
     html { scroll-behavior: smooth; }
 
     body {
       background:
-        radial-gradient(ellipse 90% 45% at 50% -10%, var(--accent-glow) 0%, transparent 65%),
+        radial-gradient(ellipse 90% 45% at 50% -10%, var(--primary-glow) 0%, transparent 65%),
         var(--bg);
-      color: var(--text);
-      font-family: 'Syne', sans-serif;
+      color: var(--ink);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
       min-height: 100vh;
       overflow-x: hidden;
       -webkit-font-smoothing: antialiased;
     }
 
-    /* Noise grain */
+    /* Noise grain overlay */
     body::after {
       content: '';
       position: fixed;
@@ -60,75 +60,52 @@
 
     /* ── Header ─────────────────────────────── */
     header {
-      padding: 72px 0 56px;
+      padding: 80px 0 64px;
       text-align: center;
     }
 
-    .eyebrow {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      gap: 10px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      font-weight: 400;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-dim);
-      margin-bottom: 28px;
-    }
-
-    .eyebrow::before, .eyebrow::after {
-      content: '';
-      display: block;
-      height: 1px;
-      width: 40px;
-      background: var(--border);
-    }
-
     h1 {
-      font-size: clamp(40px, 13vw, 104px);
+      font-family: 'Syne', system-ui, sans-serif;
+      font-size: clamp(2.5rem, 13vw, 6rem);
       font-weight: 800;
       line-height: 0.92;
       letter-spacing: -0.04em;
-      color: var(--text);
+      color: var(--ink);
+      text-wrap: balance;
     }
 
-    h1 .dot {
-      color: var(--accent);
-    }
+    h1 .dot { color: var(--primary); }
 
     .tagline {
-      margin-top: 20px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: var(--text-muted);
-      letter-spacing: 0.02em;
+      margin-top: 22px;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--muted);
+    }
+
+    /* ── Section titles ─────────────────────── */
+    .section-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+      margin-bottom: 18px;
     }
 
     /* ── How it works ───────────────────────── */
     .how-it-works {
-      background: var(--bg-2);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--r-lg);
       padding: 24px;
       margin-bottom: 32px;
-    }
-
-    .section-label {
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.18em;
-      text-transform: uppercase;
-      color: var(--text-muted);
-      margin-bottom: 18px;
     }
 
     .steps {
       list-style: none;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     .steps li {
@@ -141,7 +118,7 @@
       flex-shrink: 0;
       width: 22px;
       height: 22px;
-      background: var(--bg-3);
+      background: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 50%;
       display: flex;
@@ -149,30 +126,29 @@
       justify-content: center;
       font-size: 10px;
       font-weight: 700;
-      color: var(--accent);
-      margin-top: 1px;
+      color: var(--primary);
+      margin-top: 2px;
     }
 
     .steps li p {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: var(--text-muted);
+      font-size: 0.875rem;
+      color: var(--muted);
       line-height: 1.65;
     }
 
     .steps li p strong {
-      color: var(--text);
-      font-weight: 500;
+      color: var(--ink);
+      font-weight: 600;
     }
 
     code {
-      background: var(--bg-3);
+      background: var(--surface-2);
       border: 1px solid var(--border);
       border-radius: 4px;
-      padding: 1px 5px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--accent);
+      padding: 1px 6px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.6875rem;
+      color: var(--primary);
     }
 
     /* ── Upload ─────────────────────────────── */
@@ -190,65 +166,65 @@
 
     .drop-zone {
       border: 1.5px dashed var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--r-lg);
       padding: 32px 20px 28px;
       text-align: center;
       cursor: pointer;
-      transition: border-color 0.2s, background 0.2s, transform 0.15s;
-      background: var(--bg-2);
+      transition: border-color 0.2s, background 0.2s, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
+      background: var(--surface);
       user-select: none;
     }
 
     .drop-zone:hover {
-      border-color: var(--accent);
-      background: var(--accent-sub);
+      border-color: var(--primary);
+      background: var(--primary-sub);
     }
 
     .drop-zone.drag-over {
-      border-color: var(--accent);
-      background: var(--accent-sub);
+      border-color: var(--primary);
+      background: var(--primary-sub);
       transform: scale(1.02);
     }
 
     .drop-zone.loaded {
       border-style: solid;
-      border-color: var(--green);
-      background: var(--green-sub);
+      border-color: var(--primary);
+      background: var(--primary-sub);
     }
 
     .drop-icon {
       font-size: 32px;
       display: block;
       margin-bottom: 12px;
-      transition: transform 0.2s;
       line-height: 1;
+      transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1);
     }
 
     .drop-zone:hover .drop-icon { transform: scale(1.12) translateY(-2px); }
 
     .drop-label {
-      font-size: 13px;
-      font-weight: 700;
-      letter-spacing: 0.08em;
+      font-size: 0.8125rem;
+      font-weight: 600;
+      letter-spacing: 0.06em;
       text-transform: uppercase;
-      color: var(--text);
-      margin-bottom: 4px;
+      color: var(--ink);
+      margin-bottom: 5px;
     }
 
     .drop-hint {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--text-muted);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--muted);
       transition: color 0.2s;
     }
 
-    .drop-zone.loaded .drop-hint { color: var(--green); }
+    .drop-zone.loaded .drop-hint { color: var(--primary); }
 
     .drop-filename {
       margin-top: 8px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--green);
+      font-size: 0.6875rem;
+      font-weight: 400;
+      color: var(--primary);
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -258,13 +234,13 @@
 
     .error-msg {
       margin-top: 14px;
-      background: rgba(239, 68, 68, 0.08);
-      border: 1px solid rgba(239, 68, 68, 0.25);
-      border-radius: 8px;
+      background: oklch(0.65 0.15 25 / 0.08);
+      border: 1px solid oklch(0.65 0.15 25 / 0.25);
+      border-radius: var(--r-sm);
       padding: 12px 16px;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: #FCA5A5;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: oklch(0.82 0.12 25);
       display: none;
     }
 
@@ -273,35 +249,26 @@
       width: 100%;
       margin-top: 14px;
       padding: 17px;
-      background: var(--accent);
-      color: #fff;
+      background: var(--primary);
+      color: var(--bg);
       border: none;
-      border-radius: var(--radius);
-      font-family: 'Syne', sans-serif;
-      font-size: 13px;
-      font-weight: 700;
+      border-radius: var(--r-md);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.8125rem;
+      font-weight: 600;
       letter-spacing: 0.12em;
       text-transform: uppercase;
       cursor: pointer;
-      position: relative;
-      overflow: hidden;
-      transition: opacity 0.2s, transform 0.15s;
+      transition: background 0.2s, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
-    .analyze-btn::after {
-      content: '';
-      position: absolute;
-      inset: 0;
-      background: linear-gradient(to bottom, rgba(255,255,255,0.12), transparent);
-      pointer-events: none;
-    }
-
-    .analyze-btn:hover:not(:disabled) { opacity: 0.88; }
+    .analyze-btn:hover:not(:disabled) { background: oklch(0.72 0.130 150); }
     .analyze-btn:active:not(:disabled) { transform: scale(0.985); }
+    .analyze-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 3px; }
 
     .analyze-btn:disabled {
-      background: var(--bg-3);
-      color: var(--text-dim);
+      background: var(--surface-2);
+      color: var(--dim);
       cursor: not-allowed;
     }
 
@@ -325,34 +292,35 @@
     }
 
     .stat-card {
-      background: var(--bg-2);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--r-lg);
       padding: 22px 16px 18px;
       text-align: center;
     }
 
     .stat-card.hot {
-      border-color: var(--accent);
-      background: var(--accent-sub);
+      border-color: var(--primary);
+      background: var(--primary-sub);
     }
 
     .stat-num {
-      font-size: clamp(30px, 7vw, 44px);
-      font-weight: 800;
+      font-size: clamp(1.875rem, 7vw, 2.75rem);
+      font-weight: 700;
       line-height: 1;
       letter-spacing: -0.03em;
       margin-bottom: 7px;
+      font-variant-numeric: tabular-nums;
     }
 
-    .stat-card.hot .stat-num { color: var(--accent); }
+    .stat-card.hot .stat-num { color: var(--primary); }
 
     .stat-lbl {
-      font-size: 9px;
-      font-weight: 700;
+      font-size: 0.5625rem;
+      font-weight: 600;
       letter-spacing: 0.18em;
       text-transform: uppercase;
-      color: var(--text-muted);
+      color: var(--muted);
     }
 
     /* ── List controls ──────────────────────── */
@@ -365,16 +333,23 @@
       flex-wrap: wrap;
     }
 
+    .results-title {
+      font-size: 0.9375rem;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: -0.01em;
+    }
+
     .sort-cycle-btn {
       flex-shrink: 0;
-      background: var(--bg-3);
+      background: transparent;
       border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text-muted);
-      font-family: 'Syne', sans-serif;
-      font-size: 10px;
-      font-weight: 700;
-      letter-spacing: 0.1em;
+      border-radius: var(--r-sm);
+      color: var(--muted);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      letter-spacing: 0.10em;
       text-transform: uppercase;
       padding: 7px 14px;
       cursor: pointer;
@@ -383,51 +358,54 @@
 
     .sort-cycle-btn:hover {
       border-color: var(--border-hover);
-      color: var(--text);
+      color: var(--ink);
     }
 
     .sort-cycle-btn.active {
-      background: var(--accent-sub);
-      border-color: var(--accent);
-      color: var(--accent);
+      background: var(--primary-sub);
+      border-color: var(--primary);
+      color: var(--primary);
     }
+
+    .sort-cycle-btn:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
     .search-input {
       width: 100%;
-      background: var(--bg-2);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
-      color: var(--text);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
+      border-radius: var(--r-sm);
+      color: var(--ink);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
       padding: 11px 14px;
       outline: none;
       margin-bottom: 10px;
       transition: border-color 0.2s;
     }
 
-    .search-input:focus { border-color: var(--accent); }
-    .search-input::placeholder { color: var(--text-dim); }
+    .search-input:focus { border-color: var(--primary); }
+    .search-input::placeholder { color: var(--muted); }
 
     .clear-search-btn {
       position: absolute;
       right: 10px;
       top: 50%;
       transform: translateY(-50%);
-      background: var(--bg-3);
+      background: var(--surface-2);
       border: 1px solid var(--border);
-      border-radius: 6px;
-      color: var(--text-muted);
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
+      border-radius: var(--r-sm);
+      color: var(--ink);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.6875rem;
       font-weight: 500;
       padding: 4px 8px;
       cursor: pointer;
-      transition: color 0.15s, border-color 0.15s;
+      transition: color 0.15s, border-color 0.15s, background 0.15s;
     }
 
     .clear-search-btn:hover {
-      color: var(--text);
+      background: var(--border);
       border-color: var(--border-hover);
     }
 
@@ -442,21 +420,23 @@
       display: flex;
       align-items: center;
       justify-content: space-between;
-      background: var(--bg-2);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: 8px;
+      border-radius: var(--r-md);
       padding: 13px 16px;
       text-decoration: none;
       opacity: 0;
       animation: slideIn 0.3s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      transition: border-color 0.15s, background 0.15s, transform 0.15s;
+      transition: border-color 0.15s, background 0.15s, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1);
     }
 
     .user-item:hover {
       border-color: var(--border-hover);
-      background: var(--bg-3);
-      transform: translateX(5px);
+      background: var(--surface-2);
+      transform: translateX(4px);
     }
+
+    .user-item:focus-visible { outline: 2px solid var(--primary); outline-offset: 2px; }
 
     @keyframes slideIn {
       from { opacity: 0; transform: translateX(-10px); }
@@ -464,59 +444,55 @@
     }
 
     .user-handle {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 13px;
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.8125rem;
       font-weight: 400;
-      color: var(--text);
+      color: var(--ink);
       transition: color 0.15s;
     }
 
-    .user-item:hover .user-handle { color: var(--accent); }
+    .user-item:hover .user-handle { color: var(--primary); }
 
-    .user-left { display: flex; flex-direction: column; gap: 2px; }
+    .user-left { display: flex; flex-direction: column; gap: 3px; }
 
     .user-date {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--text-dim);
+      font-family: 'JetBrains Mono', ui-monospace, monospace;
+      font-size: 0.625rem;
+      color: var(--muted);
     }
 
-    .user-item:hover .user-date { color: var(--text-muted); }
-
     .user-arrow {
-      color: var(--text-dim);
-      font-size: 14px;
-      transition: transform 0.15s, color 0.15s;
-      font-family: 'JetBrains Mono', monospace;
+      color: var(--dim);
+      font-size: 0.875rem;
+      transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s;
     }
 
     .user-item:hover .user-arrow {
-      transform: translateX(5px);
-      color: var(--accent);
+      transform: translateX(4px);
+      color: var(--primary);
     }
 
     /* ── Empty state ────────────────────────── */
     .empty-state {
       text-align: center;
       padding: 56px 24px;
-      background: var(--bg-2);
+      background: var(--surface);
       border: 1px solid var(--border);
-      border-radius: var(--radius);
+      border-radius: var(--r-lg);
     }
 
     .empty-icon { font-size: 44px; margin-bottom: 18px; }
 
     .empty-title {
-      font-size: 20px;
+      font-size: 1.25rem;
       font-weight: 700;
       letter-spacing: -0.01em;
       margin-bottom: 8px;
     }
 
     .empty-sub {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 12px;
-      color: var(--text-muted);
+      font-size: 0.875rem;
+      color: var(--muted);
     }
 
     /* ── Reset ──────────────────────────────── */
@@ -525,16 +501,17 @@
     .reset-btn {
       background: none;
       border: none;
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 11px;
-      color: var(--text-muted);
+      font-family: 'Space Grotesk', system-ui, sans-serif;
+      font-size: 0.875rem;
+      font-weight: 400;
+      color: var(--muted);
       cursor: pointer;
       text-decoration: underline;
       text-underline-offset: 3px;
       transition: color 0.2s;
     }
 
-    .reset-btn:hover { color: var(--text); }
+    .reset-btn:hover { color: var(--ink); }
 
     /* ── Footer ─────────────────────────────── */
     footer {
@@ -545,11 +522,18 @@
     }
 
     footer p {
-      font-family: 'JetBrains Mono', monospace;
-      font-size: 10px;
-      color: var(--text-dim);
-      letter-spacing: 0.05em;
+      font-size: 0.75rem;
+      font-weight: 400;
+      color: var(--muted);
       line-height: 1.8;
+    }
+
+    /* ── Reduced motion ─────────────────────── */
+    @media (prefers-reduced-motion: reduce) {
+      .user-item { animation: none !important; opacity: 1 !important; }
+      #results   { animation: none !important; }
+      .drop-zone { transition: border-color 0.15s, background 0.15s !important; transform: none !important; }
+      .drop-icon { transition: none !important; }
     }
   </style>
 </head>
@@ -559,14 +543,13 @@
 
   <!-- Header -->
   <header>
-    <div class="eyebrow">instagram tool</div>
     <h1>ghosted<span class="dot">.</span></h1>
-    <p class="tagline">// find out who isn't following you back</p>
+    <p class="tagline">find out who isn't following you back</p>
   </header>
 
   <!-- How it works -->
   <div class="how-it-works" id="how-it-works">
-    <div class="section-label">How to get your files</div>
+    <p class="section-title">How to get your files</p>
     <ol class="steps">
       <li>
         <span class="step-num">1</span>
@@ -589,7 +572,6 @@
 
   <!-- Upload -->
   <div id="upload-section">
-    <div class="section-label" style="margin-bottom: 14px;">Upload your files</div>
     <div class="upload-grid">
 
       <div class="drop-zone" id="followers-zone" tabindex="0" role="button" aria-label="Upload followers file">
@@ -608,7 +590,6 @@
 
     </div>
 
-    <!-- Hidden file inputs -->
     <input type="file" id="followers-input" accept=".json,.html,.htm" style="display:none">
     <input type="file" id="following-input" accept=".json,.html,.htm" style="display:none">
 
@@ -635,7 +616,7 @@
     </div>
 
     <div class="list-controls">
-      <div class="section-label" style="margin-bottom:0">Not following you back</div>
+      <div class="results-title">Not following you back</div>
       <button class="sort-cycle-btn" id="sort-cycle-btn">↕ A → Z</button>
     </div>
 
@@ -653,7 +634,6 @@
 
 </div>
 
-<!-- Footer -->
 <footer>
   <div class="container">
     <p>all analysis runs locally in your browser<br>no data is ever uploaded, stored, or transmitted</p>
@@ -689,13 +669,29 @@
   const statFollowing    = document.getElementById('stat-following');
   const statGhosts       = document.getElementById('stat-ghosts');
 
+  // ── Count-up animation ─────────────────────────────────────────────────────
+  function countUp(el, target, duration, delay) {
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches || target === 0) {
+      el.textContent = target.toLocaleString();
+      return;
+    }
+    el.textContent = '0';
+    setTimeout(() => {
+      const start = performance.now();
+      const tick = (now) => {
+        const p = Math.min((now - start) / duration, 1);
+        const v = p === 1 ? 1 : 1 - Math.pow(2, -10 * p); // ease-out-expo
+        el.textContent = Math.round(v * target).toLocaleString();
+        if (p < 1) requestAnimationFrame(tick);
+      };
+      requestAnimationFrame(tick);
+    }, delay);
+  }
+
   // ── Parser ─────────────────────────────────────────────────────────────────
-  // Handles Instagram's HTML export (href links) and JSON export formats.
   function extractUsernames(raw) {
     const trimmed = raw.trimStart();
 
-    // HTML format: covers both /username and /_u/username link styles
-    // Timestamps not available in HTML exports.
     if (trimmed.startsWith('<') || trimmed.toLowerCase().startsWith('<!')) {
       const re = /href="https?:\/\/(?:www\.)?instagram\.com\/(?:_u\/)?([^/"?#]+)\/?"/gi;
       const SKIP = new Set(['p','explore','accounts','stories','direct','reels','tv','_n','web','_u']);
@@ -708,14 +704,12 @@
       return entries;
     }
 
-    // JSON format — returns {username, timestamp} objects
     let parsed;
     try { parsed = JSON.parse(raw); } catch { return null; }
 
     const fromItems = items =>
       items.map(item => {
         const d = (item.string_list_data || [])[0] || {};
-        // Followers: username in d.value; Following: username in item.title
         const username = d.value || item.title || null;
         const timestamp = d.timestamp || null;
         return username ? { username, timestamp } : null;
@@ -745,13 +739,11 @@
 
   // ── Drop zone setup ────────────────────────────────────────────────────────
   function setupZone(zone, input, hintEl, filenameEl, onLoaded) {
-    // Click to open picker
     zone.addEventListener('click', () => input.click());
     zone.addEventListener('keydown', e => {
       if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); input.click(); }
     });
 
-    // Drag over / leave
     zone.addEventListener('dragover', e => {
       e.preventDefault();
       zone.classList.add('drag-over');
@@ -760,7 +752,6 @@
       if (!zone.contains(e.relatedTarget)) zone.classList.remove('drag-over');
     });
 
-    // Drop
     zone.addEventListener('drop', async e => {
       e.preventDefault();
       zone.classList.remove('drag-over');
@@ -768,11 +759,10 @@
       if (file) await processFile(file, zone, hintEl, filenameEl, onLoaded);
     });
 
-    // File input change
     input.addEventListener('change', async e => {
       const file = e.target.files[0];
       if (file) await processFile(file, zone, hintEl, filenameEl, onLoaded);
-      input.value = ''; // allow re-selecting same file
+      input.value = '';
     });
   }
 
@@ -852,9 +842,9 @@
     const followersSet = new Set(followersData.map(u => u.username.toLowerCase()));
     ghostList = followingData.filter(u => !followersSet.has(u.username.toLowerCase()));
 
-    statFollowers.textContent = followersData.length.toLocaleString();
-    statFollowing.textContent = followingData.length.toLocaleString();
-    statGhosts.textContent    = ghostList.length.toLocaleString();
+    countUp(statFollowers, followersData.length, 500,  0);
+    countUp(statFollowing, followingData.length, 500, 80);
+    countUp(statGhosts,    ghostList.length,     700, 200);
 
     currentSort = 'alpha';
     updateSortBtn();
@@ -934,11 +924,11 @@
     currentSort = 'alpha';
     updateSortBtn();
 
-    resultsEl.style.display     = 'none';
-    uploadSection.style.display = '';
-    howItWorks.style.display    = '';
-    analyzeBtn.disabled         = true;
-    searchInput.value           = '';
+    resultsEl.style.display      = 'none';
+    uploadSection.style.display  = '';
+    howItWorks.style.display     = '';
+    analyzeBtn.disabled          = true;
+    searchInput.value            = '';
     clearSearchBtn.style.display = 'none';
     hideError();
     window.scrollTo({ top: 0, behavior: 'smooth' });

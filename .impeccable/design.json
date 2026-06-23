@@ -1,0 +1,131 @@
+{
+  "schemaVersion": 2,
+  "generatedAt": "2026-06-24T00:00:00.000Z",
+  "title": "Design System: ghosted.",
+  "extensions": {
+    "colorMeta": {
+      "bg":          { "role": "neutral", "displayName": "Void",          "canonical": "oklch(0.07 0.000 0)",   "tonalRamp": ["oklch(0.04 0 0)","oklch(0.07 0 0)","oklch(0.10 0 0)","oklch(0.14 0 0)","oklch(0.20 0 0)","oklch(0.30 0 0)","oklch(0.50 0 0)","oklch(0.75 0 0)"] },
+      "surface":     { "role": "neutral", "displayName": "Well",          "canonical": "oklch(0.12 0.000 0)",   "tonalRamp": ["oklch(0.07 0 0)","oklch(0.12 0 0)","oklch(0.17 0 0)","oklch(0.22 0 0)","oklch(0.30 0 0)","oklch(0.42 0 0)","oklch(0.60 0 0)","oklch(0.82 0 0)"] },
+      "ink":         { "role": "neutral", "displayName": "Ink",           "canonical": "oklch(0.97 0.000 0)",   "tonalRamp": ["oklch(0.22 0 0)","oklch(0.35 0 0)","oklch(0.48 0 0)","oklch(0.58 0 0)","oklch(0.70 0 0)","oklch(0.82 0 0)","oklch(0.92 0 0)","oklch(0.97 0 0)"] },
+      "muted":       { "role": "neutral", "displayName": "Muted",         "canonical": "oklch(0.54 0.000 0)",   "tonalRamp": ["oklch(0.20 0 0)","oklch(0.28 0 0)","oklch(0.36 0 0)","oklch(0.44 0 0)","oklch(0.54 0 0)","oklch(0.64 0 0)","oklch(0.74 0 0)","oklch(0.84 0 0)"] },
+      "primary":     { "role": "primary", "displayName": "Moss Signal",   "canonical": "oklch(0.68 0.130 150)", "tonalRamp": ["oklch(0.15 0.080 150)","oklch(0.23 0.095 150)","oklch(0.32 0.105 150)","oklch(0.40 0.110 150)","oklch(0.50 0.120 150)","oklch(0.60 0.125 150)","oklch(0.68 0.130 150)","oklch(0.82 0.095 150)"] }
+    },
+    "typographyMeta": {
+      "display":  { "displayName": "Display — ghosted. wordmark only", "purpose": "The 'ghosted.' h1 wordmark. One use per page. Never reused." },
+      "headline": { "displayName": "Headline — stat numbers",          "purpose": "Large numeric readouts in stat cards only." },
+      "title":    { "displayName": "Title — section and zone labels",  "purpose": "Drop zone labels, section headers, results header." },
+      "body":     { "displayName": "Body — instructions and copy",     "purpose": "Instruction steps, tagline, error messages. Max 65ch." },
+      "label":    { "displayName": "Label — stat card identifiers",    "purpose": "Stat card names only. Not on every section header." },
+      "mono":     { "displayName": "Mono — data identifiers only",     "purpose": "@username handles and follow timestamps. The Mono Fence: no other use." }
+    },
+    "motion": [
+      { "name": "ease-out-expo",     "value": "cubic-bezier(0.16, 1, 0.3, 1)",  "purpose": "Element entrances (list items, section reveal). The primary reveal easing." },
+      { "name": "ease-out-standard", "value": "cubic-bezier(0.25, 1, 0.5, 1)",  "purpose": "State transitions: hover, drag-over, loaded state changes." },
+      { "name": "duration-instant",  "value": "0.15s",                           "purpose": "Hover, border shifts, arrow translate. Feels immediate." },
+      { "name": "duration-standard", "value": "0.2s",                            "purpose": "Background color transitions, opacity shifts." },
+      { "name": "duration-reveal",   "value": "0.3s",                            "purpose": "Individual list item entrance. Per-item, staggered." },
+      { "name": "duration-section",  "value": "0.45s",                           "purpose": "Section-level fadeUp reveal (results section entrance)." },
+      { "name": "stagger-item",      "value": "18ms",                            "purpose": "Per-item delay for list entrance. Capped at 900ms total." }
+    ],
+    "breakpoints": [
+      { "name": "mobile",  "value": "460px",  "purpose": "Upload grid stacks to 1 column below this." },
+      { "name": "compact", "value": "640px",  "purpose": "Max container width — always centered." }
+    ]
+  },
+  "components": [
+    {
+      "name": "Primary Button",
+      "kind": "button",
+      "refersTo": "button-primary",
+      "description": "The Analyze CTA. Full-width, committed action. Disabled until both files are loaded.",
+      "html": "<button class=\"ds-btn-primary\">ANALYZE</button>",
+      "css": ".ds-btn-primary { display: block; width: 100%; padding: 17px 24px; background: oklch(0.68 0.130 150); color: oklch(0.97 0 0); border: none; border-radius: 10px; font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.12em; text-transform: uppercase; cursor: pointer; transition: background 0.2s cubic-bezier(0.25, 1, 0.5, 1), transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.2s; } .ds-btn-primary:hover:not(:disabled) { background: oklch(0.72 0.130 150); } .ds-btn-primary:active:not(:disabled) { transform: scale(0.985); } .ds-btn-primary:focus-visible { outline: 2px solid oklch(0.68 0.130 150); outline-offset: 3px; } .ds-btn-primary:disabled { background: oklch(0.17 0 0); color: oklch(0.32 0 0); cursor: not-allowed; }"
+    },
+    {
+      "name": "Ghost Button (Sort Cycle)",
+      "kind": "button",
+      "refersTo": "button-ghost",
+      "description": "Secondary action. Cycles sort order. Becomes accent-tinted when a non-default sort is active.",
+      "html": "<button class=\"ds-btn-ghost\">↕ A → Z</button>",
+      "css": ".ds-btn-ghost { background: transparent; border: 1px solid oklch(0.22 0 0); border-radius: 6px; color: oklch(0.54 0 0); font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.6875rem; font-weight: 600; letter-spacing: 0.10em; text-transform: uppercase; padding: 7px 14px; cursor: pointer; transition: border-color 0.15s, color 0.15s, background 0.15s; } .ds-btn-ghost:hover { border-color: oklch(0.32 0 0); color: oklch(0.97 0 0); } .ds-btn-ghost.active { background: oklch(0.68 0.130 150 / 0.07); border-color: oklch(0.68 0.130 150); color: oklch(0.68 0.130 150); } .ds-btn-ghost:focus-visible { outline: 2px solid oklch(0.68 0.130 150); outline-offset: 2px; }"
+    },
+    {
+      "name": "Drop Zone",
+      "kind": "custom",
+      "refersTo": "drop-zone",
+      "description": "File upload target. Three states: default, loaded, drag-over. The loaded state communicates success via the primary signal color.",
+      "html": "<div class=\"ds-drop-zone\" tabindex=\"0\" role=\"button\"><span class=\"ds-drop-icon\">👥</span><div class=\"ds-drop-label\">Followers</div><div class=\"ds-drop-hint\">followers_1.html / .json</div></div>",
+      "css": ".ds-drop-zone { background: oklch(0.12 0 0); border: 1.5px dashed oklch(0.22 0 0); border-radius: 14px; padding: 32px 20px 28px; text-align: center; cursor: pointer; transition: border-color 0.2s, background 0.2s, transform 0.15s; user-select: none; } .ds-drop-zone:hover, .ds-drop-zone.drag-over { border-color: oklch(0.68 0.130 150); background: oklch(0.68 0.130 150 / 0.07); } .ds-drop-zone.drag-over { transform: scale(1.02); } .ds-drop-zone.loaded { border-style: solid; border-color: oklch(0.68 0.130 150); background: oklch(0.68 0.130 150 / 0.07); } .ds-drop-icon { font-size: 32px; display: block; margin-bottom: 12px; line-height: 1; transition: transform 0.2s cubic-bezier(0.25, 1, 0.5, 1); } .ds-drop-zone:hover .ds-drop-icon { transform: scale(1.12) translateY(-2px); } .ds-drop-label { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.8125rem; font-weight: 600; letter-spacing: 0.08em; text-transform: uppercase; color: oklch(0.97 0 0); margin-bottom: 4px; } .ds-drop-hint { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.625rem; color: oklch(0.54 0 0); transition: color 0.2s; } .ds-drop-zone.loaded .ds-drop-hint { color: oklch(0.68 0.130 150); }"
+    },
+    {
+      "name": "Stat Card (Standard)",
+      "kind": "card",
+      "refersTo": "button-primary",
+      "description": "One of three summary stats at the top of results. Standard variant for follower/following counts.",
+      "html": "<div class=\"ds-stat-card\"><div class=\"ds-stat-num\">248</div><div class=\"ds-stat-lbl\">Followers</div></div>",
+      "css": ".ds-stat-card { background: oklch(0.12 0 0); border: 1px solid oklch(0.22 0 0); border-radius: 14px; padding: 22px 16px 18px; text-align: center; } .ds-stat-num { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: clamp(1.875rem, 7vw, 2.75rem); font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: oklch(0.97 0 0); margin-bottom: 7px; } .ds-stat-lbl { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.5625rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: oklch(0.54 0 0); }"
+    },
+    {
+      "name": "Stat Card (Hot — Not Back)",
+      "kind": "card",
+      "refersTo": "drop-zone-loaded",
+      "description": "The 'not following back' count. Signal-green border and number. The emotional payload of the page.",
+      "html": "<div class=\"ds-stat-card ds-stat-card--hot\"><div class=\"ds-stat-num\">12</div><div class=\"ds-stat-lbl\">Not back</div></div>",
+      "css": ".ds-stat-card { background: oklch(0.12 0 0); border: 1px solid oklch(0.22 0 0); border-radius: 14px; padding: 22px 16px 18px; text-align: center; } .ds-stat-card--hot { border-color: oklch(0.68 0.130 150); background: oklch(0.68 0.130 150 / 0.07); } .ds-stat-num { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: clamp(1.875rem, 7vw, 2.75rem); font-weight: 800; line-height: 1; letter-spacing: -0.03em; color: oklch(0.97 0 0); margin-bottom: 7px; } .ds-stat-card--hot .ds-stat-num { color: oklch(0.68 0.130 150); } .ds-stat-lbl { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.5625rem; font-weight: 600; letter-spacing: 0.18em; text-transform: uppercase; color: oklch(0.54 0 0); }"
+    },
+    {
+      "name": "User List Item",
+      "kind": "custom",
+      "refersTo": "input-search",
+      "description": "A single person who isn't following back. Links to their Instagram profile. Staggered entrance on results reveal.",
+      "html": "<a class=\"ds-user-item\" href=\"#\"><span class=\"ds-user-left\"><span class=\"ds-user-handle\">@username</span><span class=\"ds-user-date\">followed Jan 15, 2024</span></span><span class=\"ds-user-arrow\">→</span></a>",
+      "css": ".ds-user-item { display: flex; align-items: center; justify-content: space-between; background: oklch(0.12 0 0); border: 1px solid oklch(0.22 0 0); border-radius: 10px; padding: 13px 16px; text-decoration: none; transition: border-color 0.15s, background 0.15s, transform 0.15s cubic-bezier(0.16, 1, 0.3, 1); } .ds-user-item:hover { border-color: oklch(0.32 0 0); background: oklch(0.17 0 0); transform: translateX(4px); } .ds-user-left { display: flex; flex-direction: column; gap: 3px; } .ds-user-handle { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.875rem; font-weight: 500; color: oklch(0.97 0 0); transition: color 0.15s; } .ds-user-item:hover .ds-user-handle { color: oklch(0.68 0.130 150); } .ds-user-date { font-family: 'JetBrains Mono', ui-monospace, monospace; font-size: 0.625rem; color: oklch(0.54 0 0); } .ds-user-arrow { font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.875rem; color: oklch(0.32 0 0); transition: transform 0.15s cubic-bezier(0.16, 1, 0.3, 1), color 0.15s; } .ds-user-item:hover .ds-user-arrow { transform: translateX(4px); color: oklch(0.68 0.130 150); } .ds-user-item:focus-visible { outline: 2px solid oklch(0.68 0.130 150); outline-offset: 2px; }"
+    },
+    {
+      "name": "Search Input",
+      "kind": "input",
+      "refersTo": "input-search",
+      "description": "Username filter. Focus turns the border primary-green. Inline clear button appears when value is present.",
+      "html": "<input class=\"ds-input-search\" type=\"text\" placeholder=\"Search usernames…\" />",
+      "css": ".ds-input-search { display: block; width: 100%; background: oklch(0.12 0 0); border: 1px solid oklch(0.22 0 0); border-radius: 6px; color: oklch(0.97 0 0); font-family: 'Space Grotesk', system-ui, sans-serif; font-size: 0.875rem; font-weight: 400; padding: 11px 14px; outline: none; transition: border-color 0.2s; } .ds-input-search:focus { border-color: oklch(0.68 0.130 150); } .ds-input-search::placeholder { color: oklch(0.54 0 0); }"
+    }
+  ],
+  "narrative": {
+    "northStar": "The Late Read",
+    "overview": "ghosted. is the screen you check late at night, alone — the one you wouldn't want open if someone walked by. The design holds that mood: a deep, unreflective black; one signal color that says something without shouting; Space Grotesk setting everything in clean, direct prose; the \"ghosted.\" mark in Syne — the only typeface that doesn't apologize for itself.\n\nThis is a restrained system. The accent (a deep botanical green, oklch(0.68 0.130 150)) appears in fewer than 10% of any screen's surface area. Its job is to mark the loaded state, the focused element, the final tally. Its rarity is structural — when the green appears, it means something.\n\nMotion is choreographed where it matters and absent where it doesn't. Results arrive with purpose — the list staggers in, the stats count up — because the reveal IS the moment this tool was built for.",
+    "keyCharacteristics": [
+      "Pure near-black background; no tinted neutrals in architectural layers",
+      "One signal color: botanical moss green, ≤10% of any screen surface",
+      "Syne exclusively for the 'ghosted.' wordmark",
+      "Space Grotesk for all UI text: clean, direct, without character debt",
+      "JetBrains Mono restricted to @handles and timestamps only",
+      "Choreographed reveal: results entrance is designed, not defaulted"
+    ],
+    "rules": [
+      { "name": "The One Color Rule",      "body": "The moss signal appears in one role per element at most — border, background tint, or text. Never two simultaneously. Scarcity is structural.", "section": "colors" },
+      { "name": "The No-Tint Rule",        "body": "void and well have chroma exactly 0.000. The brand lives in the primary color and typography. Not in the walls.", "section": "colors" },
+      { "name": "The Two-Font Rule",       "body": "Syne appears once. Mono marks data. Everything else is Space Grotesk. If a third typeface appears, one is wrong.", "section": "typography" },
+      { "name": "The Mono Fence",          "body": "JetBrains Mono marks @handles and timestamps only. Two contexts. Any other use is a violation.", "section": "typography" },
+      { "name": "The Flat-by-Default Rule","body": "Elements are flat at rest. Depth is value (lightness), never shadow. No box-shadows in this system.", "section": "elevation" }
+    ],
+    "dos": [
+      "Do use oklch(0.97 0 0) (ink) on the moss signal fill — H-K effect makes it read brighter; white text is correct.",
+      "Do restrict JetBrains Mono to @handles and timestamps. The Mono Fence is hard.",
+      "Do use text-wrap: balance on the ghosted. display heading and any h2.",
+      "Do provide prefers-reduced-motion alternatives for all animated elements.",
+      "Do verify ≥4.5:1 for muted and placeholder text against the immediate surface.",
+      "Do treat numbered step circles as a one-time deliberate affordance for a real ordered sequence.",
+      "Do use scale(0.985) on the primary button :active state."
+    ],
+    "donts": [
+      "Don't use Syne for anything except the ghosted. wordmark.",
+      "Don't add any chroma to void or well. Both have chroma exactly 0.000.",
+      "Don't use neon or bright green. The moss signal is botanical and desaturated — any brighter green becomes a hacker tool.",
+      "Don't build a SaaS-template layout: no feature tables, no hero-metric grids.",
+      "Don't apply Instagram-adjacent colors: no pink gradients, no purple/magenta.",
+      "Don't use border-left or border-right greater than 1px as a colored accent stripe.",
+      "Don't place uppercase tracked labels above sections that don't structurally need identification.",
+      "Don't add box-shadows to cards, panels, or buttons at rest."
+    ]
+  }
+}
