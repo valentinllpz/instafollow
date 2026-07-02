@@ -165,30 +165,14 @@
 
     /* ── How it works ───────────────────────── */
     .how-it-works {
-      background: var(--surface);
-      border: 1px solid var(--border);
+      background:
+        var(--surface) padding-box,
+        linear-gradient(135deg, var(--accent-a), var(--accent-b), var(--accent-c)) border-box;
+      border: 1px solid transparent;
       border-radius: var(--r-lg);
       padding: 24px;
       margin-top: 40px;
       margin-bottom: 32px;
-      position: relative;
-      overflow: hidden;
-    }
-
-    /* gradient accent line at top of card */
-    .how-it-works::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 24px;
-      right: 24px;
-      height: 1px;
-      background: linear-gradient(to right,
-        oklch(0.60 0.240 30  / 0.4),
-        oklch(0.55 0.270 345 / 0.7),
-        oklch(0.45 0.220 290 / 0.4)
-      );
-      pointer-events: none;
     }
 
     .steps {
@@ -276,9 +260,10 @@
     }
 
     .drop-zone.loaded {
-      border-style: solid;
-      border-color: oklch(0.55 0.270 345 / 0.50);
-      background: linear-gradient(135deg, oklch(0.60 0.240 30 / 0.05), oklch(0.45 0.220 290 / 0.08));
+      border: 1.5px solid transparent;
+      background:
+        linear-gradient(135deg, oklch(0.60 0.240 30 / 0.05), oklch(0.45 0.220 290 / 0.08)) padding-box,
+        linear-gradient(135deg, var(--accent-a), var(--accent-b), var(--accent-c)) border-box;
       box-shadow: 0 0 20px oklch(0.55 0.270 345 / 0.10);
     }
 
